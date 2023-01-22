@@ -1,0 +1,56 @@
+Tables 
+
+ECOMMERCE DATABASE
+
+1 . USER TABLE 
+ - userId - unique int
+ - userName - varchar 
+ - userEmail - varchar
+ - userPassword - varchr
+
+2. Categeroy table 
+
+- categeoryID  - int -  unique
+- categeoryName - varchar - 
+  
+  watch 1
+  tv 2 
+  phone 3 
+  ac - 4
+  laptop - 5
+
+3. Brand table 
+
+- brand id - unique 
+- brand name - varchar 
+- brand categeory id foreign key (categeory id )
+
+
+4. Cart table 
+- user id : 
+- product id :
+- product name :
+- product quantity 
+- product stock display 
+
+
+5. order table
+
+- product id - from product table 
+- product name - 
+- 
+
+Merchant 
+- id 
+- name
+
+merchant item
+
+-merchant id  -
+cateory id  -
+brand id  -
+product-name 
+price 
+product-des 
+products 
+image src - stock 
