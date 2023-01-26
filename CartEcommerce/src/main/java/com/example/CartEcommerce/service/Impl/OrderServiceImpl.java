@@ -1,0 +1,71 @@
+package com.example.CartEcommerce.service.Impl;
+
+import com.example.CartEcommerce.dto.OrderReturnDTO;
+import com.example.CartEcommerce.dto.UserDTO;
+import com.example.CartEcommerce.entites.CartEntity;
+import com.example.CartEcommerce.entites.OrderEntity;
+import com.example.CartEcommerce.entites.ProductsEntity;
+import com.example.CartEcommerce.feign.FeignInterface;
+import com.example.CartEcommerce.repositories.OrderRepo;
+import com.example.CartEcommerce.service.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    OrderRepo orderRepo;
+
+    @Autowired
+    FeignInterface feignInterface;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
+
+
+    @Override
+    public void addToOrder() {
+    }
+
+    @Override
+    public void addEntity(OrderEntity orderEntity) {
+        orderRepo.save(orderEntity);
+
+    }
+
+
+    public List<ProductsEntity> getProductDetailsByProductId(String id){
+
+        List<ProductsEntity> l=new ArrayList<ProductsEntity>();
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUserId(id);
+        Iterable<ProductsEntity> productsIterable=feignInterface.getByProductId(id);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        for(ProductsEntity s:productsIterable){
+
+            l.add(s);
+        }
+        return  l;
+    }
+
+    @Override
+    public OrderReturnDTO getAllOrders(String userId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(userId));
+        List<OrderEntity> orderReturnDTOList = mongoTemplate.find(query,OrderEntity.class);
+
+        OrderReturnDTO orderReturnDTO = new OrderReturnDTO();
+        BeanUtils.copyProperties(orderReturnDTOList.get(0),orderReturnDTO);
+         return  orderReturnDTO;
+    }
+}
