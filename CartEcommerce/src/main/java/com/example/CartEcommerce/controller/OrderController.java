@@ -24,7 +24,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/orderDetails")
-public class OrderController {
+public class OrderController
+{
 
     @Autowired
     OrderService orderService;
@@ -37,6 +38,9 @@ public class OrderController {
 
     @Autowired
     FeignInterfaceForEmail feignInterfaceForEmail;
+
+    @Autowired
+    CartRepo cartRepo;
 
 
 
@@ -61,21 +65,16 @@ public class OrderController {
             Update update = new Update();
             update.set("totalCost",price);
             mongoTemplate.findAndModify(query1,update,OrderEntity.class);
-            Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(orderDto.getUserId()));
             update = new Update();
             update.addToSet("productsEntities",productsEntityList.get(0));
-            mongoTemplate.findAndModify(query,update,OrderEntity.class);
+            mongoTemplate.findAndModify(query1,update,OrderEntity.class);
 
         }
-
-
-
-//        EmailService emailService = new EmailService();
-//        emailService.setRecipient(orderDto.getUserId());
-//        emailService.setMsgBody(productsEntityList.get(0).getProductName()+" ordered Successfully");
-//        emailService.setSubject("Order Detail");
-//        String s = feignInterfaceForEmail.callEmailServer(emailService);
+        EmailService emailService = new EmailService();
+        emailService.setRecipient(orderDto.getUserId());
+        emailService.setMsgBody(productsEntityList.get(0).getProductName()+" ordered Successfully");
+        emailService.setSubject("Order Detail");
+        String s = feignInterfaceForEmail.callEmailServer(emailService);
         CartStatus cartStatus = new CartStatus();
         cartStatus.setStatus("Order is placed Successfully");
 
@@ -96,6 +95,7 @@ public class OrderController {
 
         return new ResponseEntity(orderService.getAllOrders(userId),HttpStatus.OK);
     }
+
 
 
 

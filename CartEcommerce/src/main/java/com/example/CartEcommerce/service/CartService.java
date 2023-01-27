@@ -1,6 +1,7 @@
 package com.example.CartEcommerce.service;
 
 import com.example.CartEcommerce.dto.CartReturnDto;
+import com.example.CartEcommerce.dto.CartStatus;
 import com.example.CartEcommerce.entites.CartEntity;
 import com.example.CartEcommerce.entites.ProductsEntity;
 
@@ -14,4 +15,6 @@ public interface CartService {
 
     public CartReturnDto getProductDetailsByUserId(String id);
     public void deleteBy(String userid,String productid);
+    public CartStatus allAllToCart (String userid);
+
 }

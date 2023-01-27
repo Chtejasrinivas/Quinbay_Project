@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,11 +62,49 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderReturnDTO getAllOrders(String userId) {
         Query query = new Query();
+        OrderReturnDTO orderReturnDTO = new OrderReturnDTO();
         query.addCriteria(Criteria.where("_id").is(userId));
         List<OrderEntity> orderReturnDTOList = mongoTemplate.find(query,OrderEntity.class);
 
-        OrderReturnDTO orderReturnDTO = new OrderReturnDTO();
-        BeanUtils.copyProperties(orderReturnDTOList.get(0),orderReturnDTO);
-         return  orderReturnDTO;
+        if(orderReturnDTOList.size()!=0)
+        {
+            BeanUtils.copyProperties(orderReturnDTOList.get(0), orderReturnDTO);
+        }
+
+        return  orderReturnDTO;
+    }
+
+    @Override
+    public void AddingAllProductsToOrder(CartEntity cartEntity) {
+
+        List<ProductsEntity> productsEntityList = cartEntity.getProductsEntities();
+        System.out.println(productsEntityList.size());
+        Double totalCost = cartEntity.getTotalCost();
+        OrderEntity orderEntity=new OrderEntity();
+        if(!orderRepo.existsById(cartEntity.getUserId())){
+            orderEntity.setUserId(cartEntity.getUserId());
+            orderEntity.setProductsEntities(null);
+            orderEntity.setTotalCost(0);
+            orderRepo.save(orderEntity);
+        }
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(cartEntity.getUserId()));
+        Update update;
+        for (ProductsEntity productsEntity : productsEntityList) {
+            update = new Update();
+            update.addToSet("productsEntities", productsEntity);
+            mongoTemplate.findAndModify(query, update, OrderEntity.class);
+        }
+        List<OrderEntity> orderEntityList = mongoTemplate.find(query, OrderEntity.class);
+
+        double   price = orderEntityList.get(0).getTotalCost();
+        double totalprice = totalCost + price;
+        Update update1 = new Update();
+        update1.set("totalCost", totalprice);
+        mongoTemplate.findAndModify(query, update1, OrderEntity.class);
+
+
+
+
     }
 }

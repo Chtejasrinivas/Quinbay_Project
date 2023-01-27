@@ -2,11 +2,15 @@ package com.example.CartEcommerce.service.Impl;
 
 import com.example.CartEcommerce.dto.CartDto;
 import com.example.CartEcommerce.dto.CartReturnDto;
+import com.example.CartEcommerce.dto.CartStatus;
+import com.example.CartEcommerce.dto.EmailService;
 import com.example.CartEcommerce.entites.CartEntity;
 import com.example.CartEcommerce.entites.ProductsEntity;
 import com.example.CartEcommerce.feign.FeignInterface;
+import com.example.CartEcommerce.feign.FeignInterfaceForEmail;
 import com.example.CartEcommerce.repositories.CartRepo;
 import com.example.CartEcommerce.service.CartService;
+import com.example.CartEcommerce.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.beans.BeanUtils;
@@ -29,10 +33,16 @@ public class CartServiceImpl implements CartService {
     CartRepo cartRepo;
 
     @Autowired
+    OrderService orderService;
+
+    @Autowired
     FeignInterface feignInterface;
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+    @Autowired
+    FeignInterfaceForEmail feignInterfaceForEmail;
 
 
     @Override
@@ -61,21 +71,14 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartReturnDto getProductDetailsByUserId(String id) {
-
-//        List<ProductsEntity> l=new ArrayList<ProductsEntity>();
-//        List<CartEntity> productsIterable=cartRepo.findAll();
-//        for(CartEntity s:productsIterable){
-//            if(s.getUserId().equals(id))
-//            {
-//
-//            l.add(s.getProductsEntities());
-//        }
-//        return  l;
+    public CartReturnDto getProductDetailsByUserId(String id)
+    {
 
         Optional<CartEntity> optional = cartRepo.findById(id);
         CartReturnDto cartDto = new CartReturnDto();
-        if (optional.isPresent()) {
+
+        if (optional.isPresent())
+        {
             BeanUtils.copyProperties(optional.get(), cartDto);
         }
         return cartDto;
@@ -89,6 +92,31 @@ public class CartServiceImpl implements CartService {
         Update update = new Update();
         update.pull("productsEntities",new Query(Criteria.where("productId").is(productid)));
         mongoTemplate.findAndModify(query,update,CartEntity.class);
+    }
+
+    @Override
+    public CartStatus allAllToCart(String userid)
+    {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("_id").is(userid));
+        List<CartEntity> cartEntityList = mongoTemplate.find(query,CartEntity.class);
+        System.out.println(cartEntityList);
+        if(cartEntityList.size()!=0) {
+            orderService.AddingAllProductsToOrder(cartEntityList.get(0));
+            cartRepo.deleteById(userid);
+        }
+        CartStatus cartStatus = new CartStatus();
+        cartStatus.setStatus("Successfully Added to Orders !");
+        cartStatus.setTotalCost(0);
+
+
+        EmailService emailService = new EmailService();
+        emailService.setRecipient(userid);
+        emailService.setMsgBody("ordered Successfully");
+        emailService.setSubject("Order Detail");
+        String s = feignInterfaceForEmail.callEmailServer(emailService);
+        return cartStatus;
+
     }
 
 }

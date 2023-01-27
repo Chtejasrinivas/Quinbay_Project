@@ -12,7 +12,7 @@ import java.util.List;
 @FeignClient(name = "productsMongo", url = "http://10.20.2.120:8095/products/")
 public interface FeignInterface {
 
-    @PostMapping(value = "getByProductId/{id}")
+    @GetMapping(value = "getByProductId/{id}")
     List<ProductsEntity> getByProductId(@PathVariable("id") String id);
 
 

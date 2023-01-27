@@ -55,14 +55,25 @@ public class CartController {
         if(!cartRepo.existsById(cartDto.getUserId())){
              cartEntity.setUserId(cartDto.getUserId());
              cartEntity.setProductsEntities(productsEntityList);
+             cartEntity.setTotalCost(productsEntityList.get(0).getPrice());
              cartService.addEntity(cartEntity);
         }
         else{
-            Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(cartDto.getUserId()));
+
+            Query query1 = new Query();
+            query1.addCriteria(Criteria.where("_id").is(cartDto.getUserId()));
+
+            List<CartEntity> orderEntities = mongoTemplate.find(query1,CartEntity.class);
+            double price = orderEntities.get(0).getTotalCost() + productsEntityList.get(0).getPrice();
+
             Update update = new Update();
+            update.set("totalCost",price);
+            mongoTemplate.findAndModify(query1,update,CartEntity.class);
+
+            update = new Update();
             update.addToSet("productsEntities",productsEntityList.get(0));
-            mongoTemplate.findAndModify(query,update,CartEntity.class);
+
+            mongoTemplate.findAndModify(query1,update,CartEntity.class);
 
         }
 
@@ -92,11 +103,30 @@ public class CartController {
     @DeleteMapping(value = "deleteCartProduct/{userId}/{productId}")
     public ResponseEntity<CartStatus> deleteCartProduct(@PathVariable ("userId") String userid, @PathVariable ("productId") String productid)
     {
+        List<ProductsEntity> productsEntityList = cartService.getProductDetailsBYProductId(productid);
+
+        Query query1 = new Query();
+        query1.addCriteria(Criteria.where("_id").is(userid));
+        List<CartEntity> orderEntities = mongoTemplate.find(query1,CartEntity.class);
+        double price = orderEntities.get(0).getTotalCost() - productsEntityList.get(0).getPrice();
+        Update update = new Update();
+        update.set("totalCost",price);
+        mongoTemplate.findAndModify(query1,update,CartEntity.class);
         cartService.deleteBy(userid,productid);
         CartStatus cartStatus = new CartStatus();
         cartStatus.setStatus("Product delted");
+        cartStatus.setTotalCost(price);
         return  new ResponseEntity(cartStatus,HttpStatus.OK);
     }
+
+    @PostMapping(value = "/addAllToOrder/{userId}")
+    public ResponseEntity<CartStatus> addAllToOrder (@PathVariable("userId") String userId)
+    {
+
+        return  new ResponseEntity(cartService.allAllToCart(userId),HttpStatus.OK);
+    }
+
+
 
 
 

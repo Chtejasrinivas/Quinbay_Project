@@ -8,4 +8,6 @@ import lombok.ToString;
 public class CartStatus {
 
     private String status;
+
+    private double totalCost;
 }

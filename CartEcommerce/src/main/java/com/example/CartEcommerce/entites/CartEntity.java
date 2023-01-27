@@ -21,5 +21,5 @@ public class CartEntity {
 
     private List<ProductsEntity> productsEntities;
 
-
+    private double totalCost;
 }

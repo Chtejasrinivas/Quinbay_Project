@@ -16,4 +16,6 @@ public class CartReturnDto {
     private String userId;
 
     private List<ProductsEntity> productsEntities;
+
+    private double totalCost;
 }

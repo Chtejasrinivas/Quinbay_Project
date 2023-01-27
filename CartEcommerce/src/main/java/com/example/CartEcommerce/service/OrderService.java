@@ -12,6 +12,6 @@ public interface OrderService {
     public void addEntity(OrderEntity orderEntity);
     public List<ProductsEntity> getProductDetailsByProductId(String id);
 //    public List<ProductsEntity> findById(String id);
-
     public OrderReturnDTO getAllOrders(String userId);
+    public void AddingAllProductsToOrder(CartEntity cartEntity);
 }
