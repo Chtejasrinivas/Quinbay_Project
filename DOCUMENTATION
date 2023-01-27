@@ -54,3 +54,241 @@ price
 product-des 
 products 
 image src - stock 
+
+
+
+API”s in Products microservice:
+
+1.Add products
+
+Input
+{
+&quot;brand&quot;: &quot;string&quot;,
+&quot;categoryId&quot;: &quot;string&quot;,
+&quot;imageURL&quot;: &quot;string&quot;,
+&quot;merchantId&quot;: &quot;string&quot;,
+&quot;merchantName&quot;: &quot;string&quot;,
+&quot;price&quot;: 0,
+&quot;productDescription&quot;: &quot;string&quot;,
+&quot;productId&quot;: &quot;string&quot;,
+&quot;productName&quot;: &quot;string&quot;,
+&quot;stock&quot;: 0
+}
+Out:
+
+String : product added with id or already product with id exists
+
+2.Delete products
+
+Input:
+
+Product id
+
+Output:
+Deleted product with id or product is not found
+
+3.update Products:
+Input:
+{
+&quot;brand&quot;: &quot;string&quot;,
+&quot;categoryId&quot;: &quot;string&quot;,
+&quot;imageURL&quot;: &quot;string&quot;,
+&quot;merchantId&quot;: &quot;string&quot;,
+&quot;merchantName&quot;: &quot;string&quot;,
+&quot;price&quot;: 0,
+&quot;productDescription&quot;: &quot;string&quot;,
+&quot;productId&quot;: &quot;string&quot;,
+&quot;productName&quot;: &quot;string&quot;,
+&quot;stock&quot;: 0
+}
+
+Output
+
+Product is update with id
+
+4. Product List
+
+Input:
+
+No input
+
+Output:
+All products available in products table
+
+5.Get All Products Using Products Id
+Input
+
+Product Id
+
+Output
+
+Product details matching with that product id
+
+6.Finding All Products Details Matching Product Name
+
+Input:
+
+Any string
+
+Output:
+
+Return if all products details if matching with input string
+
+7.Finding All Products Matching With Category Id
+Input:
+
+Category Id
+
+Output;
+
+All product Details matching with category id
+
+8.Getting Remaining Merchants Selling Same Product
+
+Input:
+
+Merchant Id
+
+Product Name
+
+Output:
+
+Display Other Merchants for same product name
+
+9:All Products By Merchant
+
+Input:
+
+Merchant Id
+
+Output:
+
+Display all Products Details Of Merchant
+
+10:Add Stock to products
+
+Input:
+&quot;merchantId&quot;: &quot;string&quot;,
+&quot;productId&quot;: &quot;string&quot;,
+&quot;stock&quot;: 0
+
+Output:
+
+Stock Added to the product with matching merchant id and
+product id
+
+12.Decrease stock of a product
+
+Input:
+Product id
+
+Output;
+
+Only stock will we Decrease with matching product id
+
+13.update stock of product
+
+Input:
+
+&quot;merchantId&quot;: &quot;string&quot;,
+&quot;productId&quot;: &quot;string&quot;,
+&quot;stock&quot;: 0
+
+Output:
+
+Stock will be updated
+
+14. Get all products matching with Search term
+
+Input:
+Any string
+
+Output:
+Get product details matching with search string
+
+
+
+Users Documentation
+
+PostgresSQL 
+
+
+User SignUp 
+
+String firstName, 
+String lastName,
+ String email,
+ String password,
+String city,
+ String state,
+String phoneNumber
+
+
+User SignIn
+
+String email;
+String password;
+
+
+Users SignIn Response 
+
+String status, 
+String token
+
+Users SignUp Response 
+
+String status
+String message
+
+
+Merchant SignIn SignUp
+
+
+Merchant SignUp 
+
+
+  "company": "string",
+  "merchantCity": "string",
+  "merchantId": "string",
+  "merchantName": "string",
+  "merchantPassword": "string",
+  "merchantPhone": "string",
+  "merchantState": "string"
+
+
+Merchant SignIn
+
+  "merchantId": "string",
+  "merchantPassword": "string"
+
+
+Merchant Signin SingUp Response
+
+boolean status;
+
+
+
+CART Microservice
+
+CART INPUT 
+
+   private String userId
+   private String productId
+
+Cart Return Output  
+
+private String userId;
+private List<ProductsEntity> productsEntities;
+private double totalCost;
+
+
+Email Service 
+
+Input and Output fields 
+
+private String recipient 
+private String msgBody
+private String subject 
+
+
+
