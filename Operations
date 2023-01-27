@@ -1,0 +1,13 @@
+USER -- >> REGISTER (SignUp)
+        >> LOGIN (SignUP)
+        >> CHECK HIS/HER ORDER HISTORY -----(POSTGRES)
+              
+         
+ USER VIEW --> PRODUCT DISPLAY PAGE      -----(MONGO)
+           --> INDIVIDUAL PRODUCT PAGE 
+           --> DIFFERENT MERCHANTS 
+           --> ADD TO CART 
+           --> ORDERS PAGE 
+           --> EMAIL 
+           
+         
